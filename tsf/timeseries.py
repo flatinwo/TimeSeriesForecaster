@@ -7,18 +7,23 @@ class TimeSeriesDF:
 		pd.to_datetime(dt,infer_datetime_format=infer_datetime_format)
 		self.df.set_index(pd.DatetimeIndex(dt),inplace=True)
 
+	def getDaily(self):
+		return self.df.groupby(pd.TimeGrouper(freq='D'))
+
 	def getWeekly(self):
-		return self.tsdf.df.groupby(pd.TimeGrouper(freq='W'))
+		return self.df.groupby(pd.TimeGrouper(freq='W'))
 
 	def getMonthly(self):
-		return self.tsdf.df.groupby(pd.TimeGrouper(freq='M'))
+		return self.df.groupby(pd.TimeGrouper(freq='M'))
 
 	def getYearly(self):
-		return self.tsdf.df.groupby(pd.TimeGrouper(freq='12M'))
+		return self.df.groupby(pd.TimeGrouper(freq='12M'))
 
 	def getPeriod(self):
 		pass
 
+	def resampleTrainAndTest(self):
+		pass
 
 	def spread(self):
 		pass
