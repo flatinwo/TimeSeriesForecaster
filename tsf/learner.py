@@ -17,7 +17,13 @@ class StatLearner:
 		return Analysis(pred,obs) if not asPandas else pd.DataFrame(Analysis(pred,obs,keep=False,params={'shift':shift}).analyze,index=[name])
 
 	@staticmethod
-	def linearRegresser(x):
+	def linearRegresser(x,colname="CloseReturn",training_size=400,n_params=3,asPandas=True,keep=False):
+		"""
+		:param x includes data preferably as pd.core.frame.DataFrme
+		:param training_size is the number of observations for regression
+		:param number of regressors
+		:returns depending on flag pandas data frame as result
+		"""
 		pass
 
 	@staticmethod
