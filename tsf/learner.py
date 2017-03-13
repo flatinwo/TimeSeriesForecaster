@@ -17,14 +17,39 @@ class StatLearner:
 		return Analysis(pred,obs) if not asPandas else pd.DataFrame(Analysis(pred,obs,keep=False,params={'shift':shift}).analyze,index=[name])
 
 	@staticmethod
-	def linearRegresser(x,colname="CloseReturn",training_size=400,n_params=3,asPandas=True,keep=False):
+	def linearRegresser(x,colname="CloseReturn",training_size=4,n_params=3,asPandas=True,keep=False):
 		"""
 		:param x includes data preferably as pd.core.frame.DataFrme
 		:param training_size is the number of observations for regression
-		:param number of regressors
+		:param number of regressors or features
 		:returns depending on flag pandas data frame as result
 		"""
-		pass
+		assert isinstance(x,pd.core.frame.DataFrame)
+		assert colname in x.columns
+		
+		# construct observation and response matrix
+		obs= x[colname].as_matrix()
+		sz=len(obs)-n_params+1
+		obMatrix = np.array([obs[i:sz+i] for i in range(n_params)]).transpose()[:-n_params+1]
+		respVector = obs[n_params:]
+
+		assert len(obMatrix) == len(respVector)-1
+
+		# create linear regression object
+		from sklearn import linear_model
+		regr = linear_model.LinearRegression()
+
+		counter = 0
+		sz = len(obMatrix)
+		
+		# there is probably a clever to change state of regr without repassing data
+		while counter + training_size < sz - 1 :
+			regr.fit(obMatrix[counter:counter+training_size],
+				respVector[counter:counter+training_size])
+			pred = regr.predict(obMatrix[counter+training_size+1].reshape(1,-1))
+			exp = respVector[counter+training_size+1]
+			counter += 1
+
 
 	@staticmethod
 	def aRCH(x,index=(1,1)):
@@ -76,3 +101,15 @@ class PerformanceMeasure:
 	def get(predicted,observed,name=["MSE","QSL"]):
 		pass
 
+
+if __name__ == "__main__":
+	import timeseries as tf
+	from volproxy import *
+
+	tsdf = ts.TimeSeriesDF()
+	tsdf_returns = Returns.compute(tsdf)
+	vol = Volatilies(tsdf_returns.getDaily())
+	vol.annualize()
+	vol.transform(function=np.log)
+	vol.vols.dropna(inplace=True)
+	StatLearner.linearRegresser(vol.vols)
