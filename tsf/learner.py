@@ -17,7 +17,7 @@ class StatLearner:
 		return Analysis(pred,obs) if not asPandas else pd.DataFrame(Analysis(pred,obs,keep=False,params={'shift':shift}).analyze,index=[name])
 
 	@staticmethod
-	def linearRegresser(x,colname="CloseReturn",training_size=4,n_params=3,asPandas=True,keep=False):
+	def linearRegresser(x,colname="CloseReturn",training_size=4,n_params=3,asPandas=True,keep=False,function=np.log,inverse=np.exp):
 		"""
 		:param x includes data preferably as pd.core.frame.DataFrme
 		:param training_size is the number of observations for regression
@@ -28,7 +28,7 @@ class StatLearner:
 		assert colname in x.columns
 		
 		# construct observation and response matrix
-		obs= x[colname].as_matrix()
+		obs= function(x[colname]).as_matrix()
 		sz=len(obs)-n_params+1
 		obMatrix = np.array([obs[i:sz+i] for i in range(n_params)]).transpose()[:-n_params+1]
 		respVector = obs[n_params:]
@@ -51,8 +51,8 @@ class StatLearner:
 			regr.fit(obMatrix[counter:counter+training_size],
 				respVector[counter:counter+training_size])
 
-			pred[counter] = regr.predict(obMatrix[counter+training_size].reshape(1,-1))[0]
-			obs[counter] = respVector[counter+training_size]
+			pred[counter] = inverse(regr.predict(obMatrix[counter+training_size].reshape(1,-1))[0])
+			obs[counter] = 	inverse(respVector[counter+training_size])
 			counter += 1
 			regrparams.append([regr.intercept_]+[regr.coef_])
 		
@@ -122,6 +122,6 @@ if __name__ == "__main__":
 	tsdf_returns = Returns.compute(tsdf)
 	vol = Volatilies(tsdf_returns.getDaily())
 	vol.annualize()
-	vol.transform(function=np.log)
+	#vol.transform(function=np.log)
 	vol.vols.dropna(inplace=True)
-	StatLearner.linearRegresser(vol.vols)
+	Ans = StatLearner.linearRegresser(vol.vols)
