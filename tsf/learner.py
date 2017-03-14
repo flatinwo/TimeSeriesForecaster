@@ -41,14 +41,26 @@ class StatLearner:
 
 		counter = 0
 		sz = len(obMatrix)
-		
+		pred = np.zeros(sz-training_size-1)
+		obs = np.zeros(sz-training_size-1)
+
+
+		name="linearRegresser_"+str(n_params)
+		regrparams=[]*(sz-training_size-1)
+
 		# there is probably a clever to change state of regr without repassing data
 		while counter + training_size < sz - 1 :
 			regr.fit(obMatrix[counter:counter+training_size],
 				respVector[counter:counter+training_size])
-			pred = regr.predict(obMatrix[counter+training_size+1].reshape(1,-1))
-			exp = respVector[counter+training_size+1]
+			pred[counter] = regr.predict(obMatrix[counter+training_size+1].reshape(1,-1))[0]
+			obs[counter] = respVector[counter+training_size+1]
 			counter += 1
+			regrparams.append([regr.intercept_]+[regr.coef_])
+		if asPandas:
+			regresslog = pd.DataFrame(Analysis(pred,obs,keep=False,params={'all_coeffs':regrparams}).analyze,index=[name])
+		else:
+			regresslog = Analysis(pred,obs)
+		return regresslog
 
 
 	@staticmethod
