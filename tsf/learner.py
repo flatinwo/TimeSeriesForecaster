@@ -8,7 +8,7 @@ class StatLearner:
 		pass
 
 	@staticmethod
-	def previousRegresser(x,shift=1,colname="CloseReturn",name="",asPandas=False):
+	def previousRegresser(x,shift=1,colname="CloseReturn",name="",asPandas=False,update_x=False):
 		assert isinstance(x,pd.core.frame.DataFrame)
 		assert colname in x.columns
 		pred = x.shift(shift)[colname].as_matrix()[shift:]
@@ -17,12 +17,14 @@ class StatLearner:
 		return Analysis(pred,obs) if not asPandas else pd.DataFrame(Analysis(pred,obs,keep=False,params={'shift':shift}).analyze,index=[name])
 
 	@staticmethod
-	def linearRegresser(x,colname="CloseReturn",training_size=4,n_params=3,asPandas=True,keep=False,function=np.log,inverse=np.exp):
+	def linearRegresser(x,colname="CloseReturn",training_size=4,
+		n_params=3,asPandas=True,keep=False,function=np.log,inverse=np.exp,update_x=False):
 		"""
 		:param x includes data preferably as pd.core.frame.DataFrme
 		:param training_size is the number of observations for regression
 		:param number of regressors or features
 		:returns depending on flag pandas data frame as result
+		:TODO update_x with prediction
 		"""
 		assert isinstance(x,pd.core.frame.DataFrame)
 		assert colname in x.columns
@@ -41,13 +43,13 @@ class StatLearner:
 
 		counter = 0
 		sz = len(obMatrix)
-		pred = np.zeros(sz-training_size-1)
-		obs = np.zeros(sz-training_size-1)
+		pred = np.zeros(sz-training_size)
+		obs = np.zeros(sz-training_size)
 		name="linearRegresser_"+str(n_params)
-		regrparams=[]*(sz-training_size-1)
+		regrparams=[]*(sz-training_size)
 
 		# there is probably a clever to change state of regr without repassing data
-		while counter + training_size < sz - 1 :
+		while counter + training_size < sz  :
 			regr.fit(obMatrix[counter:counter+training_size],
 				respVector[counter:counter+training_size])
 

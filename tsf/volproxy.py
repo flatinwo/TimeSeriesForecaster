@@ -23,7 +23,7 @@ class Volatilies:
 		elif isinstance(data,ts.TimeSeriesDF):
 			pass
 		else:
-			raise TypeError("Unexpected type error.")
+			raise TypeError("Expecting a timeseries dataframe.")
 
 	@staticmethod
 	def compute(data,colnames=[s+str("Return") for s in ["Open", "High", "Low", "Close"]],method="std",pandas=True):
