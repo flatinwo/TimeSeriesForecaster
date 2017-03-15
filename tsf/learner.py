@@ -117,12 +117,12 @@ class PerformanceMeasure:
 
 
 if __name__ == "__main__":
-	import timeseries as tf
+	import timeseries as ts
 	from volproxy import *
 
 	tsdf = ts.TimeSeriesDF()
 	tsdf_returns = Returns.compute(tsdf)
-	vol = Volatilies(tsdf_returns.getDaily())
+	vol = Volatilities(tsdf_returns.getDaily())
 	vol.annualize()
 	#vol.transform(function=np.log)
 	vol.vols.dropna(inplace=True)

@@ -14,12 +14,12 @@ class Returns:
 
 		return data
 
-class Volatilies:
+class Volatilities:
 	def __init__(self,data):
 		self.vols = []
 		self.transformed_by=""
 		if isinstance(data,pd.core.groupby.DataFrameGroupBy):
-			self.vols = Volatilies.compute(data)
+			self.vols = Volatilities.compute(data)
 		elif isinstance(data,ts.TimeSeriesDF):
 			pass
 		else:
@@ -46,7 +46,7 @@ class Volatilies:
 if __name__ == "__main__":
 	tsdf = ts.TimeSeriesDF()
 	tsdf_returns = Returns.compute(tsdf)
-	vol = Volatilies(tsdf_returns.getDaily())
+	vol = Volatilities(tsdf_returns.getDaily())
 	vol.annualize()
 	vol.transform(function=np.log)
 	vol.vols.dropna(inplace=True)
