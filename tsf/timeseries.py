@@ -1,11 +1,12 @@
 import pandas as pd
 
 class TimeSeriesDF:
-	def __init__(self,filename="../data/AUDUSD.csv",infer_datetime_format=True):
+	def __init__(self,filename="../data/AUDUSD.csv",infer_datetime_format=True,offsetHr=8,offsetMin=-5):
 		self.df = pd.read_csv(filename)
 		dt = self.df.Date.astype(str).str.cat(self.df.Time.astype(str), sep=' ')
 		pd.to_datetime(dt,infer_datetime_format=infer_datetime_format)
 		self.df.set_index(pd.DatetimeIndex(dt),inplace=True)
+		self.df.index +=  pd.offsets.Hour(offsetHr) + pd.offsets.Minute(offsetMin)
 
 	def getDaily(self):
 		return self.df.groupby(pd.TimeGrouper(freq='D'))
@@ -26,6 +27,11 @@ class TimeSeriesDF:
 		pass
 
 	def spread(self):
+		pass
+
+	def getCustomTimeGroup(self):
+		from pandas.tseries.offsets import CustomBusinessMonthBegin, CustomBusinessHour
+		bh = CustomBusinessHour(start='16:00',weekmask='Sun Mon Tue Wed Thu Fri')
 		pass
 
 
