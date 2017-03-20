@@ -32,6 +32,8 @@ class TimeSeriesDF:
 	def getCustomTimeGroup(self):
 		from pandas.tseries.offsets import CustomBusinessMonthBegin, CustomBusinessHour
 		bh = CustomBusinessHour(start='16:00',weekmask='Sun Mon Tue Wed Thu Fri')
+		#http://stackoverflow.com/questions/13019719/get-business-days-between-start-and-end-date-using-pandas
+		#http://pandas.pydata.org/pandas-docs/stable/timeseries.html
 		pass
 
 
